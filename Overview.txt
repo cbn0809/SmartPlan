@@ -1,0 +1,102 @@
+# AI House Planner – Project Summary
+
+## 1. Project Overview
+AI House Planner is a Python-based web application that generates basic 2D house floor plans based on user-provided plot dimensions and housing requirements. It is developed as a school project.
+
+**Main objective:** Automatically generate a simple, understandable house floor plan with room layouts, dimensions, furniture and architectural symbols.
+
+## 2. Technologies Used
+- Python
+- Flask (web framework)
+- HTML and CSS
+- SVG (floor plan rendering)
+- Machine Learning (house planning classification)
+- CSV dataset
+
+## 3. User Inputs
+- Plot length and width
+- Number of bedrooms
+- Number of bathrooms
+- Number of floors
+- Parking spaces
+- Balconies
+- Study room requirement
+- Kitchen type (open/closed)
+- Living and dining (combined/separate)
+- Construction cost rate
+
+**Measurement system:** Metres (m) and square metres (m²).
+
+## 4. Input Restrictions
+To avoid impractical layouts, the current version limits:
+- Plot width: 6–20 m
+- Plot length: 8–25 m
+- Maximum plot area: 400 m²
+- Bedrooms: 1–5
+- Bathrooms: 1–4
+- Floors: 1–2
+
+Invalid dimensions should produce validation messages.
+
+## 5. Main Features Developed
+- User-friendly input form.
+- Metric-based measurements.
+- Automatic room allocation.
+- Multi-floor plan generation.
+- SVG-based 2D architectural floor plans.
+- Room names, dimensions and area labels.
+- Walls, doors, door swings and windows.
+- Basic furniture and bathroom fixtures.
+- Staircase representation for multi-storey houses.
+- Floor selection tabs.
+- SVG floor plan download.
+- Estimated construction cost.
+- Basic machine-learning prediction.
+- Basic layout evaluation score.
+
+## 6. Floor Plan Generation
+The current generator uses a fixed 3 × 4 planning grid to allocate rooms into different zones.
+
+It includes basic planning rules for:
+- Living and dining adjacency.
+- Kitchen and dining adjacency.
+- Bedroom and bathroom placement.
+- Shared staircase positioning between floors.
+- Open or closed kitchen arrangements.
+- Combined or separate living and dining spaces.
+
+The renderer uses SVG to draw the architectural plan, with dimensions and labels.
+
+## 7. Development Progress
+- **Initial version:** Developed the Flask application and basic floor plan generation.
+- **Metric update:** Converted the interface and drawing system to metres while maintaining compatibility with the existing machine-learning model.
+- **Development v2:** Added room geometry, wall thickness, doors, windows, staircase alignment, floor tabs and SVG export.
+- **Development v3:** Improved furniture, room labels and architectural symbols.
+- **Development v3.1:** Fixed SVG scaling and CSS-related drawing problems.
+- **Development v3.2:** Added practical input limits, improved drawing visibility, increased floor plan prominence and refined room labelling.
+
+The latest project version is **AI House Planner v3.2**.
+
+## 8. Current Limitations
+- Uses a fixed 3 × 4 grid rather than flexible room arrangements.
+- Room proportions and positions are not fully optimised.
+- Furniture placement is basic.
+- Does not fully validate architectural standards or building regulations.
+- Does not calculate structural requirements or verify actual construction feasibility.
+- Machine-learning predictions are supplementary and do not independently guarantee a correct floor plan.
+
+## 9. Future Improvements
+1. Improve room arrangement and proportions.
+2. Generate more practical floor plans for different input combinations.
+3. Improve furniture placement and circulation.
+4. Improve door, window and staircase positioning.
+5. Ensure all room labels and dimensions remain readable.
+6. Test different plot dimensions and housing requirements.
+7. Improve layout evaluation and validation.
+
+## 10. Important Development Requirement
+The **floor plan must remain the main focus of the application**. Prioritise correct room placement, realistic proportions, readable text, clear dimensions and a clean architectural drawing.
+
+Keep the project suitable for a school-level implementation. Avoid unnecessary complexity and preserve the existing Flask application and metric measurement system when making further changes.
+
+**Current development baseline: AI House Planner v3.2.**

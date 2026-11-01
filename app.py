@@ -38,10 +38,14 @@ def generate():
         width = float(request.form["plot_width"])
         beds = int(request.form["bedrooms"])
         baths = int(request.form["bathrooms"])
+        ensuites = int(request.form.get("ensuite_bathrooms", 0))
         floors = int(request.form["floors"])
         parking = int(request.form.get("parking_spaces", 0))
         balconies = int(request.form.get("balconies", 0))
         study = int(request.form.get("study_room", 0))
+        utility = int(request.form.get("utility_room", 0))
+        garden_type = request.form.get("garden_type", "none")
+        terrace_garden = int(request.form.get("terrace_garden", 0))
         kitchen = request.form.get("kitchen_type", "Open")
         living = request.form.get("living_dining", "Combined")
         rate = float(request.form.get("rate", 2200))
@@ -49,20 +53,25 @@ def generate():
             raise ValueError("Plot dimensions and construction rate must be greater than zero.")
         # Keep this school-project planner within a realistic residential plot range.
         if not (8.0 <= length <= 25.0):
-            raise ValueError("For this student project, plot length must be between 8 m and 25 m.")
+            raise ValueError("Plot length must be between 8 m and 25 m.")
         if not (6.0 <= width <= 20.0):
-            raise ValueError("For this student project, plot width must be between 6 m and 20 m.")
+            raise ValueError("Plot width must be between 6 m and 20 m.")
         if length * width > 400:
             raise ValueError("Maximum supported plot area is 400 m². Please enter a smaller residential plot.")
         if max(length, width) / min(length, width) > 2.5:
             raise ValueError("Please use a more practical plot proportion (maximum side ratio 2.5:1).")
         if not (1 <= beds <= 5 and 1 <= baths <= 4 and 1 <= floors <= 2):
-            raise ValueError("Choose 1–5 bedrooms, 1–4 bathrooms and 1–2 floors for this prototype.")
-        if not (0 <= parking <= 2 and 0 <= balconies <= 2 and study in (0,1)):
+            raise ValueError("Choose 1–5 bedrooms, 1–4 bathrooms and 1–2 floors.")
+        if not (0 <= parking <= 2 and 0 <= balconies <= 2 and study in (0,1)
+                and utility in (0,1)
+                and 0 <= ensuites <= min(beds, baths - 1)):
             raise ValueError("Please check parking, balcony and study-room selections.")
+        if garden_type not in ("none", "rear", "courtyard"):
+            raise ValueError("Choose no garden, a rear garden, or an L-shaped courtyard garden.")
         plot_area = length * width
         floor_plans = build_floors(width, length, beds, baths, floors, parking,
-                                   balconies, bool(study), kitchen, living)
+                                   balconies, bool(study), kitchen, living, ensuites,
+                                   bool(utility), garden_type, bool(terrace_garden))
         total_builtup = sum(f["builtup"] for f in floor_plans)
         # Rate remains a familiar ₹/sq ft input; all geometry and displayed areas use metric.
         rate_m2 = rate * FT2_PER_M2
@@ -76,8 +85,8 @@ def generate():
                 "svg": render_svg(f, width, length),
                 "rooms": [{
                     "name": r.name, "width": r.clear_w, "length": r.clear_h, "area": r.area
-                } for r in f["rooms"]],
-                "area": sum(r.area for r in f["rooms"]),
+                } for r in f["rooms"] if r.kind != "open" and r.name],
+                "area": sum(r.area for r in f["rooms"] if r.kind != "terrace"),
                 "layout_score": f["layout_score"]
             })
         return render_template("result.html", prediction=prediction,

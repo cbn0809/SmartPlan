@@ -1,35 +1,45 @@
 import pandas as pd
 import joblib
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import RepeatedStratifiedKFold, cross_val_score
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score, classification_report
 
 df = pd.read_csv("house_planner_synthetic_dataset.csv")
-features = ["plot_area_sqft","bedrooms","bathrooms","floors","parking_spaces",
-            "balconies","study_room","kitchen_type","living_dining",
+features = ["plot_area_sqft", "bedrooms", "bathrooms", "floors", "parking_spaces",
+            "balconies", "study_room", "kitchen_type", "living_dining",
             "estimated_builtup_area_sqft"]
 X, y = df[features], df["layout_category"]
-cat = ["kitchen_type","living_dining"]
-num = [c for c in features if c not in cat]
+cat = ["kitchen_type", "living_dining"]
+num = [column for column in features if column not in cat]
 prep = ColumnTransformer([
     ("categorical", OneHotEncoder(handle_unknown="ignore"), cat),
     ("numeric", "passthrough", num)
 ])
+
+# Compare tree complexity over 100 stratified train/validation splits. Re-fitting
+# the same tree 100 times would not improve it; these folds test which depth
+# generalizes better before the final model is fitted on all available rows.
+cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=20, random_state=42)
+depths = [6, 8, 10]
+cv_results = {}
+for depth in depths:
+    candidate = Pipeline([
+        ("prep", prep),
+        ("tree", DecisionTreeClassifier(max_depth=depth, random_state=42))
+    ])
+    scores = cross_val_score(candidate, X, y, cv=cv, scoring="accuracy", n_jobs=1)
+    cv_results[depth] = scores
+    print(f"Depth {depth}: 100-fold accuracy "
+          f"{scores.mean():.3f} +/- {scores.std():.3f}")
+
+best_depth = max(depths, key=lambda depth: cv_results[depth].mean())
 model = Pipeline([
     ("prep", prep),
-    ("tree", DecisionTreeClassifier(max_depth=6, random_state=42))
+    ("tree", DecisionTreeClassifier(max_depth=best_depth, random_state=42))
 ])
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=.2, random_state=42, stratify=y
-)
-model.fit(X_train, y_train)
-pred = model.predict(X_test)
-print("Rows and columns:", df.shape)
-print("Category counts:\n", y.value_counts())
-print("Test accuracy:", round(accuracy_score(y_test, pred), 3))
-print(classification_report(y_test, pred, zero_division=0))
+model.fit(X, y)
 joblib.dump(model, "house_model.joblib")
-print("Saved house_model.joblib")
+print(f"Selected depth: {best_depth}")
+print(f"Saved house_model.joblib trained on all {len(df)} rows.")
