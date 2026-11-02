@@ -17,3 +17,6 @@
 .floor-view{width:100%}
 .floor-tabs{margin:12px 0 18px}
 @media(max-width:650px){.diagram{padding:8px}.diagram svg{width:100%;min-width:0}}
+
+/* Keep the plan at its normal responsive size without a viewport-height cap. */
+.diagram svg{max-height:none}
