@@ -4,20 +4,20 @@
 <main class="wrap"><section class="hero compact-hero"><div class="eyebrow">YOUR CONCEPT PLAN</div><h1>Your architectural floor plan</h1><p>Top view · dimensions in metres · room areas in square metres</p></section>
 <section class="panel"><div class="heading"><h2>Architectural floor plans</h2><span class="pill">Top view · dimensions in m</span></div>
 <div class="floor-tabs">{% for plan in plans %}<button class="tab {% if loop.first %}active{% endif %}" data-floor="{{ loop.index0 }}">Floor {{ plan.level }}</button>{% endfor %}</div>
-{% for plan in plans %}<div class="floor-view {% if not loop.first %}hidden{% endif %}" id="floor-{{ loop.index0 }}"><div class="diagram">{{ plan.svg|safe }}</div><div class="floor-meta"><span>Floor {{ plan.level }} room area: <b>{{ "%.2f"|format(plan.area) }} m²</b></span><button class="download" onclick="downloadFloor({{ loop.index0 }})">Download SVG ↓</button></div>
+{% for plan in plans %}<div class="floor-view {% if not loop.first %}hidden{% endif %}" id="floor-{{ loop.index0 }}"><div class="diagram">{{ plan.svg|safe }}</div><div class="floor-meta"><span>Floor {{ plan.level }} mapped interior area: <b>{{ "%.2f"|format(plan.area) }} m²</b></span><button class="download" onclick="downloadFloor({{ loop.index0 }})">Download SVG ↓</button></div>
 <div class="table-wrap"><table><thead><tr><th>Room</th><th>Width (m)</th><th>Length (m)</th><th>Area (m²)</th></tr></thead><tbody>{% for r in plan.rooms %}<tr><td>{{ r.name }}</td><td>{{ "%.2f"|format(r.width) }}</td><td>{{ "%.2f"|format(r.length) }}</td><td>{{ "%.2f"|format(r.area) }}</td></tr>{% endfor %}</tbody></table></div></div>{% endfor %}
 <p class="note">The planning engine prioritises public rooms at the front, keeps kitchen and dining in neighbouring zones, groups private rooms with nearby bathrooms and reserves the same staircase cell on every floor. Door swings, window marks and furniture symbols remain schematic.</p></section>
 <section class="recommend"><div><div class="eyebrow">ML LAYOUT CLASSIFICATION</div><h2>{{ prediction }} layout</h2><p>{% if model_available %}Your existing trained model classified the plot and room requirements.{% else %}The geometry engine ran successfully. Train the optional ML model to enable layout classification.{% endif %}</p></div><div class="mark">⌂</div></section>
 <section class="stats">
 <div class="stat"><small>Plot area</small><strong>{{ "%.2f"|format(plot_area) }} m²</strong><small>{{ "%.2f"|format(plot_width) }} × {{ "%.2f"|format(plot_length) }} m</small></div>
-<div class="stat"><small>Estimated total floor area</small><strong>{{ "%.2f"|format(builtup) }} m²</strong><smalumbing stacks, fire safety or exact construction clearances. The current plan outline follows the full plot boundary because setback inputs are not implemented yet. The room subdivision is algorithmic and requires architectural refinement. Have a licensed architect and structural engineer review any real project.</p></main>ll>{{ floors }} floor(s), conceptual footprint</small></div>
+<div class="stat"><small>Estimated total floor area</small><strong>{{ "%.2f"|format(builtup) }} m²</strong><small>{{ floors }} floor(s), conceptual footprint</small></div>
 <div class="stat"><small>Indicative construction cost</small><strong>₹{{ "{:,.0f}".format(cost) }}</strong><small>₹{{ "%.2f"|format(cost_lakh) }} lakh · ₹{{ rate }}/sq. ft.</small></div></section>
 <section class="panel score-panel"><div><div class="eyebrow">RULE-BASED LAYOUT CHECK</div><strong class="score">{{ layout_score }}/100</strong><p class="note">Heuristic arrangement score based on selected room adjacencies, room proportions and aligned stair-core position. It is not an architectural compliance rating.</p></div></section>
 
 <section class="panel requirements"><h2>Area summary</h2><div class="area-row"><span>Plot area</span><b>{{ "%.2f"|format(plot_area) }} m²</b></div><div class="area-row"><span>Conceptual ground-floor footprint</span><b>{{ "%.2f"|format(builtup/floors) }} m²</b></div><div class="area-row"><span>Plot area outside current building footprint</span><b>{{ "%.2f"|format(remaining) }} m²</b></div><p>{{ bedrooms }} bedrooms · {{ bathrooms }} bathrooms · {{ floors }} floors</p></section>
 <a class="btn linkbtn" href="/">Plan another house →</a>
-<p class="disclaimer">Thankyou</p>
-<footer>SMARTPLAN · AI HOUSE PLANNER · STUDENT PROJECT</footer>
+<p class="disclaimer">Preliminary plan only. Confirm dimensions, setbacks and local requirements with a qualified professional before construction. Garden layouts are illustrative and do not verify legal setbacks.</p></main>
+<footer>SMARTPLAN · HOME PLANNER</footer>
 <script>
 document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{
  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
